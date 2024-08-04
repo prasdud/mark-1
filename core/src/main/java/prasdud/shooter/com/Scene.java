@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Scene implements Screen {
@@ -15,6 +19,8 @@ public class Scene implements Screen {
     private Character character;
     private OrthographicCamera camera;
     private Obstacle[] obstacles;
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
 
     @Override
     public void show() {
@@ -22,7 +28,14 @@ public class Scene implements Screen {
         backgroundTexture = new Texture("background-image.jpg");
         backgroundSprite = new Sprite(backgroundTexture);
         Texture characterTexture = new Texture("character.png");
-        character = new Character(characterTexture);
+
+        //init box2d
+        Box2D.init();
+        world = new World(new Vector2(0, 0), true);
+        debugRenderer = new Box2DDebugRenderer();
+
+        //create the character
+        character = new Character(world, characterTexture);
 
         // Initialize the camera
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -31,13 +44,17 @@ public class Scene implements Screen {
         // Initialize obstacles
         Texture obstacleTexture = new Texture("obstacle.png");
         obstacles = new Obstacle[] {
-            new Obstacle(obstacleTexture, 200, 200),
-            new Obstacle(obstacleTexture, 400, 300)
+            new Obstacle(world, obstacleTexture, 200, 200),
+            new Obstacle(world, obstacleTexture, 400, 300)
         };
     }
 
     @Override
     public void render(float delta) {
+
+        //step physics simulation
+        world.step(1 / 60f, 6, 2);
+
         // Update character movement based on input
         character.update(delta);
 
@@ -51,17 +68,17 @@ public class Scene implements Screen {
 
         batch.begin();
         // Draw the background, which moves with the camera
-        batch.draw(backgroundTexture, -camera.position.x, -camera.position.y);
+        batch.draw(backgroundTexture, -camera.viewportWidth / 2, -camera.viewportHeight / 2);
+
         // Draw the character, which is centered by the camera
         character.render(batch);
+
         // Draw obstacles in their fixed positions relative to the camera
         for (Obstacle obstacle : obstacles) {
-            // Convert obstacle position to camera coordinates
-            float obstacleX = obstacle.getX() - camera.position.x;
-            float obstacleY = obstacle.getY() - camera.position.y;
-            batch.draw(obstacle.getTexture(), obstacleX, obstacleY);
+            obstacle.render(batch);
         }
         batch.end();
+        debugRenderer.render(world, camera.combined);
     }
 
     @Override
@@ -87,5 +104,7 @@ public class Scene implements Screen {
         for (Obstacle obstacle : obstacles) {
             obstacle.dispose();
         }
+        world.dispose();
+        debugRenderer.dispose();
     }
 }
