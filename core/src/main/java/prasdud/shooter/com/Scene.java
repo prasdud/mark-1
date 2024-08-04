@@ -14,6 +14,7 @@ public class Scene implements Screen {
     private Sprite backgroundSprite;
     private Character character;
     private OrthographicCamera camera;
+    private Obstacle[] obstacles;
 
     @Override
     public void show() {
@@ -26,6 +27,13 @@ public class Scene implements Screen {
         // Initialize the camera
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // Initialize obstacles
+        Texture obstacleTexture = new Texture("obstacle.png");
+        obstacles = new Obstacle[] {
+            new Obstacle(obstacleTexture, 200, 200),
+            new Obstacle(obstacleTexture, 400, 300)
+        };
     }
 
     @Override
@@ -42,9 +50,17 @@ public class Scene implements Screen {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        // Adjust background position according to camera position
+        // Draw the background, which moves with the camera
         batch.draw(backgroundTexture, -camera.position.x, -camera.position.y);
+        // Draw the character, which is centered by the camera
         character.render(batch);
+        // Draw obstacles in their fixed positions relative to the camera
+        for (Obstacle obstacle : obstacles) {
+            // Convert obstacle position to camera coordinates
+            float obstacleX = obstacle.getX() - camera.position.x;
+            float obstacleY = obstacle.getY() - camera.position.y;
+            batch.draw(obstacle.getTexture(), obstacleX, obstacleY);
+        }
         batch.end();
     }
 
@@ -67,5 +83,9 @@ public class Scene implements Screen {
         batch.dispose();
         backgroundTexture.dispose();
         character.dispose();
+        // Dispose obstacle textures
+        for (Obstacle obstacle : obstacles) {
+            obstacle.dispose();
+        }
     }
 }
