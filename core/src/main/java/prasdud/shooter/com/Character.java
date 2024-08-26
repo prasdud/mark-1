@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.*;
 public class Character {
     private Sprite sprite;
     private Body body;
-    private float speed = 20000f;
+    private float speed = 5000f;
 
     public Character(World world, Texture texture) {
         sprite = new Sprite(texture);
@@ -36,7 +36,10 @@ public class Character {
     }
 
     public void update(float delta) {
+        float sprintSpeedMultiplier = 5f;
         Vector2 velocity = body.getLinearVelocity();
+
+        velocity.set(0,0);
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             velocity.x = -speed * delta;
@@ -52,6 +55,10 @@ public class Character {
             velocity.y = -speed * delta;
         } else {
             velocity.y = 0;
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            velocity.scl(sprintSpeedMultiplier); // Scale the velocity for sprinting
         }
 
         body.setLinearVelocity(velocity);
