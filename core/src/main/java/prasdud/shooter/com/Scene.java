@@ -11,6 +11,8 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Scene implements Screen {
     private SpriteBatch batch;
@@ -21,6 +23,8 @@ public class Scene implements Screen {
     private Obstacle[] obstacles;
     private World world;
     private Box2DDebugRenderer debugRenderer;
+    private List<PickupItem> items;
+
 
     @Override
     public void show() {
@@ -36,6 +40,11 @@ public class Scene implements Screen {
 
         //create the character
         character = new Character(world, characterTexture);
+
+        //items
+        items = new ArrayList<>();
+        Texture gunTexture = new Texture("Gun.png");
+        items.add(new Gun("Pistol", 10f, 0.5f, gunTexture, 300, 300));
 
         // Initialize the camera
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -77,6 +86,15 @@ public class Scene implements Screen {
         for (Obstacle obstacle : obstacles) {
             obstacle.render(batch);
         }
+
+        for (PickupItem item : items) {
+            item.render(batch);
+            if (item.isPickedUp(character)) {
+                item.dispose();
+                // Handle the pickup (e.g., add to inventory or equip the weapon)
+            }
+        }
+
         batch.end();
         debugRenderer.render(world, camera.combined);
     }
