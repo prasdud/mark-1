@@ -26,4 +26,6 @@ public class Gun extends PickupItem {
     public float getFireRate() {
         return fireRate;
     }
+
+
 }

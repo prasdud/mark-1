@@ -2,7 +2,9 @@ package prasdud.shooter.com;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,7 +26,7 @@ public class Scene implements Screen {
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private List<PickupItem> items;
-
+    private Cursor customCursor;
 
     @Override
     public void show() {
@@ -43,7 +45,7 @@ public class Scene implements Screen {
 
         //items
         items = new ArrayList<>();
-        Texture gunTexture = new Texture("Gun.png");
+        Texture gunTexture = new Texture("pistol.png");
         items.add(new Gun("Pistol", 10f, 0.5f, gunTexture, 300, 300));
 
         // Initialize the camera
@@ -52,10 +54,18 @@ public class Scene implements Screen {
 
         // Initialize obstacles
         Texture obstacleTexture = new Texture("obstacle.png");
-        obstacles = new Obstacle[] {
+        obstacles = new Obstacle[]{
             new Obstacle(world, obstacleTexture, 200, 200),
             new Obstacle(world, obstacleTexture, 400, 300)
         };
+
+        //create cursor
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("target-16.png"));
+        int xHotspot = 8;
+        int yHotspot = 8;
+        customCursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+        pixmap.dispose();
+        Gdx.graphics.setCursor(customCursor);
     }
 
     @Override
@@ -124,5 +134,9 @@ public class Scene implements Screen {
         }
         world.dispose();
         debugRenderer.dispose();
+        if (customCursor != null) {
+            Gdx.graphics.setCursor(null); // Reset the cursor to default
+            customCursor.dispose();
+        }
     }
 }
