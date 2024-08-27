@@ -9,6 +9,11 @@ This project was generated with a template including simple application launcher
 A survivor shooter game written in Java.<br>
 Currently under development.
 
+##TO-DO
+
+- Add shooting functionality.
+- Add stats for Jeff
+
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
