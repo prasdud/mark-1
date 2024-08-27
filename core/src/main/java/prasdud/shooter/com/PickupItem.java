@@ -3,29 +3,30 @@ package prasdud.shooter.com;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Circle;
 
 public class PickupItem {
     private Sprite sprite;
+    private boolean pickedUp;
 
     public PickupItem(Texture texture, float x, float y) {
         sprite = new Sprite(texture);
         sprite.setPosition(x, y);
+        pickedUp = false;
     }
 
     public void render(SpriteBatch batch) {
-        sprite.draw(batch);
+        if (!pickedUp) {
+            sprite.draw(batch);
+        }
     }
 
     public boolean isPickedUp(Character character) {
-        Circle pickupArea = new Circle(
-            character.getBoundingRectangle().x + character.getBoundingRectangle().width / 2,
-            character.getBoundingRectangle().y + character.getBoundingRectangle().height / 2,
-            1 // Adjust this radius as needed
-        );
-        System.out.println("picked up gun");
-        return pickupArea.contains(sprite.getBoundingRectangle().x + sprite.getBoundingRectangle().width / 2,
-            sprite.getBoundingRectangle().y + sprite.getBoundingRectangle().height / 2);
+        if (character.getBoundingRectangle().overlaps(sprite.getBoundingRectangle())) {
+            pickedUp = true;  // Mark the item as picked up
+            System.out.println("Item picked up");
+            return true;
+        }
+        return false;
     }
 
     public void dispose() {
