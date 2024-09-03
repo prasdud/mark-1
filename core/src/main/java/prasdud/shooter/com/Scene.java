@@ -51,6 +51,9 @@ public class Scene implements Screen {
         // Initialize the camera
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        // rotating camera for isometric view
+        camera.rotate(45);
+        camera.rotate(-30, 1, 0, 0);
 
         // Initialize obstacles
         Texture obstacleTexture = new Texture("obstacle.png");
