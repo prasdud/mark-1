@@ -27,13 +27,25 @@ public class Scene implements Screen {
     private Box2DDebugRenderer debugRenderer;
     private List<PickupItem> items;
     private Cursor customCursor;
+    private Texture tileTexture;
+    private int[][] grid;
+    private final int TILE_WIDTH = 64;  // Width of each tile in pixels
+    private final int TILE_HEIGHT = 32; // Height of each tile in pixels
 
     @Override
     public void show() {
         batch = new SpriteBatch();
         backgroundTexture = new Texture("background-image.jpg");
         backgroundSprite = new Sprite(backgroundTexture);
+        tileTexture = new Texture("background-image.jpg");
         Texture characterTexture = new Texture("character.png");
+
+        grid = new int[][] {
+            {1, 1, 1, 1},
+            {1, 1, 1, 1},
+            {1, 1, 1, 1},
+            {1, 1, 1, 1}
+        };
 
         //init box2d
         Box2D.init();
@@ -90,7 +102,18 @@ public class Scene implements Screen {
 
         batch.begin();
         // Draw the background, which moves with the camera
-        batch.draw(backgroundTexture, -camera.viewportWidth / 2, -camera.viewportHeight / 2);
+        //batch.draw(backgroundTexture, -camera.viewportWidth / 2, -camera.viewportHeight / 2);
+
+        for (int y = 0; y < grid.length; y++) {
+            for (int x = 0; x < grid[y].length; x++) {
+                // Convert grid coordinates to isometric coordinates
+                float isoX = (x - y) * TILE_WIDTH / 2;
+                float isoY = (x + y) * TILE_HEIGHT / 2;
+
+                // Draw the tile at the calculated position
+                batch.draw(tileTexture, isoX, isoY);
+            }
+        }
 
         // Draw the character, which is centered by the camera
         character.render(batch);
